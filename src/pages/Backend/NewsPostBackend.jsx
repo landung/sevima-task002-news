@@ -108,7 +108,11 @@ class NewsPostBackend extends Component {
     }
 
     componentDidMount() {
-      this.getNewsDetail();
+      const newsId = this.state.newsId;
+      
+      if(newsId){
+        this.getNewsDetail();
+      }
     }
   
     render() {
