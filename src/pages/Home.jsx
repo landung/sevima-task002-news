@@ -1,37 +1,44 @@
 import React, { Component, Fragment } from 'react';
 import API from '../helpers/API';
 import NewsListComp from '../components/NewsListComp';
+import BreadcrumComp from '../components/BreadcrumbComp';
 
 class Home extends Component {
 
     state = {
+        page: [
+          {
+            name: 'Home',
+            active: true
+          }
+        ],
         newsList: [],
+        errorMessage: ''
     }
-    
-    getNews = () => API.get('news')
-    .then(response => {
-      this.setState({
-        newsList: response.data
-      })
-    })
-  
+
+    async getNews() {
+      try {
+        const response = await API.get('news');
+        this.setState({
+          newsList: response.data
+        })
+      } catch (error) {
+        this.setState({
+          errorMessage: error.message
+        })
+      }
+    }
+      
     componentDidMount() {
       this.getNews();
     }
-    
-    handleNewsDetail = () => {
-      console.log(this.props);
-    }
-  
-    render() {
+      
+    render() {     
       return (
         <Fragment>
           <div>
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item active" aria-current="page">Home</li>
-            </ol>
-          </nav>
+            <BreadcrumComp page={this.state.page}/>
+            {this.state.errorMessage}
             <hr />
             <div className="row mb-2">
             {
@@ -41,12 +48,6 @@ class Home extends Component {
                             key={newsList.id} 
                             data={newsList} 
                         />
-                    //   <div key={newsList.id} className="news">
-                    //     <p className="title"><Link to={`/news-detail/${newsList.id}`}>{newsList.title}</Link></p>
-                    //     <p className="content">{newsList.content}</p>
-                    //     <p> <Link to={`/news-detail/${newsList.id}`}>Detail</Link></p>
-                    //     <hr />
-                    //   </div>
                     )
                 })
             }

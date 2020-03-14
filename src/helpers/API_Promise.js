@@ -1,14 +1,13 @@
 import axios from 'axios';
 
 class API {
-
     static get(path) {
         const promise = new Promise((resolve, reject) => {
             axios.get(`/${path}`)
             .then((response) => {            
                 resolve(response.data);
             }, (error) => {
-                reject(new Error(error));
+                reject(error);
             })
         })
         

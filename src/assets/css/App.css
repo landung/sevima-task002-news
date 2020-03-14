@@ -46,3 +46,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.news-title {
+  font-weight: bold;
+  font-size: 120%;
+}

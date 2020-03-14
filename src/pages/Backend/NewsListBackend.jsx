@@ -2,10 +2,17 @@ import React, { Component, Fragment } from 'react';
 import API from '../../helpers/API';
 import NewsListBackendComp from '../../components/NewsListBackendComp';
 import { Link } from 'react-router-dom';
+import BreadcrumComp from '../../components/BreadcrumbComp';
 
 class NewsList extends Component {
 
     state = {
+      page: [
+        {
+          name: 'News List',
+          active: true
+        }
+      ],
       formNewsPost: {
         title: '',
         content: ''
@@ -28,18 +35,23 @@ class NewsList extends Component {
         isUpdate: true
       })
     }
+
+    async deleteNews(id) {
       
-    handleRemove = (id) => {
-      
-      API.delete(`news/${id}`)
-      .then((response) => {
+      try {
+        const response = await API.delete(`news/${id}`);
         this.setState({
           message: response.message
         })
-        this.getNewsByUser(); 
-      }, (err) => {
-        //console.log(err);
-      })
+      } catch (error) {
+        this.setState({
+          errorMessage: error.message
+        })
+      }
+    }
+      
+    handleRemove = (id) => {
+      this.deleteNews(id);
     }
   
     componentDidMount() {
@@ -49,11 +61,7 @@ class NewsList extends Component {
     render() {
       return (
         <Fragment>
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item active" aria-current="page">News</li>
-            </ol>
-          </nav>
+          <BreadcrumComp page={this.state.page}/>
           <Link to="/news-post-backend" className="btn btn-success">Add</Link>
           <p>{this.state.message}</p>
           {

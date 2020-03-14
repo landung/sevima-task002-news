@@ -37,6 +37,42 @@ class NewsPostBackend extends Component {
       });
     }
 
+    async putNews(id, data) {
+      try {
+        const response = await API.put(`news/${id}`, data);
+        const rsData = response.data;
+        if(rsData.error){
+          this.setState({
+            postError: true,
+            postMessage: rsData.message
+          })
+        }
+        else{
+          this.props.history.push(`/news-detail-backend/${id}`);
+        }
+
+      } catch (error) {
+        this.setState({
+          postError: true,
+          postMessage: error.message
+        })
+      }
+    }
+
+    async postNews(data) {
+      try {
+        const response = await API.post(`news`, data);
+        const rsData = response.data;
+        const id = rsData.data.id;
+        this.props.history.push(`/news-detail-backend/${id}`);
+      } catch (error) {
+        this.setState({
+          postError: true,
+          postMessage: error.message
+        })
+      }
+    }
+
     handleSubmitNews = () => {
       const {id, title, content} = this.state.formNewsPost;
       
@@ -44,53 +80,35 @@ class NewsPostBackend extends Component {
   
         if(this.state.isUpdate) {
           let data = {title: title, content: content}
-  
-          API.put(`news/${id}`, data)
-          .then(() => {            
-            this.props.history.push(`/news-detail-backend/${id}`);
-          }, (error) => {
-            this.setState({
-              postError: true,
-              postMessage: error
-            })
-          })
+          this.putNews(id, data);
         }
         else {
-          API.post('news', this.state.formNewsPost)
-          .then((response) => {
-            const id = response.data.data.id;
-            this.props.history.push(`/news-detail-backend/${id}`);
-          },
-          (error) => {
-            this.setState({
-              postError: true,
-              postMessage: error.response.statusText
-            })
-          })
+          this.postNews(this.state.formNewsPost);
         }
 
       }
 
     }
 
-    componentDidMount() {
-
-      let id = this.state.newsId;
-
-      if(id) {
-        API.get(`news/${id}`)
-        .then((response) => {
-          this.setState({
-            formNewsPost: response.data
-          });
-        }, (error) => {
-
-        })
-
+    async getNewsDetail() {
+      
+      const newsId = this.state.newsId;
+      
+      try {
+        const response = await API.get(`news/${newsId}`);
         this.setState({
+          formNewsPost: response.data,
           isUpdate: true
-        });
+        })
+      } catch (error) {
+        this.setState({
+          errorMessage: error.message
+        })
       }
+    }
+
+    componentDidMount() {
+      this.getNewsDetail();
     }
   
     render() {

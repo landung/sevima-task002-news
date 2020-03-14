@@ -1,15 +1,19 @@
 import React, { Component, Fragment } from 'react';
+import BreadcrumComp from '../../components/BreadcrumbComp';
 
 class Dashboard extends Component { 
-  
+  state = {
+    page: [
+      {
+        name: 'Dashboard',
+        active: true
+      }
+    ]
+}
     render() {
       return (
         <Fragment>
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item active" aria-current="page">Dashboard</li>
-            </ol>
-          </nav>
+          <BreadcrumComp page={this.state.page}/>
         </Fragment>
       )
     }

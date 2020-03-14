@@ -6,20 +6,20 @@ import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 import sessionManager from './helpers/sessionManager';
 import './assets/css/App.css';
+import { config } from './config/config';
 
 export const userData = sessionManager.getUserData();
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
+axios.defaults.baseURL = config.requestURL;
 
 if(userData != null) {
-    const token = 'Bearer ' + userData.meta.token;
+    const token = `${config.authType}${userData.meta.token}`;
     axios.defaults.headers.common['Authorization'] = token;
 }
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 axios.interceptors.request.use(request => {
-    console.log(request);
     return request;
 }, error => {
     return Promise.reject(error);

@@ -1,6 +1,7 @@
 import React from 'react';
 
 const ALertComp = (props) => {
+
     let alertColor = 'danger';
     
     if(!props.data.postError) {

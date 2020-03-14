@@ -11,6 +11,8 @@ import sessionManager from './helpers/sessionManager';
 import { userData } from '.';
 import NewsDetailBackend from './pages/Backend/NewsDetailBackend';
 import NewsPostBackend from './pages/Backend/NewsPostBackend';
+import API from './helpers/API';
+import { config } from './config/config';
 
 //State Manajemen
 export const RootContext = createContext();
@@ -23,39 +25,39 @@ class App extends Component {
     apiResponse: {}
   }
 
+  async postLogin(data) {
+    try {
+      const response = await API.post(`login`, data);
+      console.log(response.data);
+      data = response.data;
+      if(data.error){
+        this.setState({
+          apiResponse: data
+        });
+      }
+      else{
+        sessionManager.setUserData(data);
+        
+        //set token header
+        const token = `${config.authType}${data.meta.token}`;
+        axios.defaults.headers.common['Authorization'] = token;
+
+        this.setState({
+          auth: true
+        })
+      }
+    } catch (error) {
+      this.setState({
+        errorMessage: error.message
+      })
+    }
+  }
+
   handleLogin = (data) => {
       const {username,password} = data;
 
       if(username && password) {
-        axios.post('/login', data)
-        .then((result) => {
-          const rsData = result.data;
-
-          if(rsData.error){
-            this.setState({
-              apiResponse: rsData
-            });
-          }
-          else{
-            
-            sessionManager.setUserData(rsData);
-
-            //set token header
-            const token = 'Bearer ' + rsData.meta.token;
-            axios.defaults.headers.common['Authorization'] = token;
-
-            this.setState({
-              auth: true
-            })
-          }
-        }, (err) => {
-          this.setState({
-            apiResponse: {
-              error: true,
-              message: 'Network Error'
-            }
-          })
-        })
+        this.postLogin(data);
       }
   }
 
@@ -68,7 +70,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-
     if(userData != null){
       this.setState({
         auth: true

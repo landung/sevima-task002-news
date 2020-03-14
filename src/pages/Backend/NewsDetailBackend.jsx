@@ -10,34 +10,38 @@ class NewsDetailBackend extends Component {
         newsDetail: [],
         newsUser: []
     }
-  
-    componentDidMount() {
+    
+    async getNewsDetail() {
       
       const newsId = this.state.newsId;
-  
-      API.get(`news/${newsId}`)
-      .then((response) => {  
+
+      try {
+        const response = await API.get(`news/${newsId}`);
         this.setState({
           newsDetail: response.data,
           newsUser: response.data.user
-        });        
-      }, (err) => {
-        //console.log(err);
-      })
+        })
+      } catch (error) {
+        this.setState({
+          errorMessage: error.message
+        })
+      }
+    }
 
-      
-      
+    componentDidMount() {
+      this.getNewsDetail();
     }
   
     render() {
       return (
         <Fragment>
+
           <div className="card">
               <ul className="nav justify-content-center">
-                <li class="nav-item">
+                <li className="nav-item">
                   <Link to={`/news-post-backend`} className="btn btn-success">Add</Link>
                 </li>
-                <li class="nav-item">
+                <li className="nav-item">
                   <Link to={`/news-post-backend/${this.state.newsId}`} className="btn btn-warning">Edit</Link>
                 </li>
               </ul>
